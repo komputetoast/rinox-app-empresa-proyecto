@@ -1,0 +1,78 @@
+{% extends "gestion/base.html" %}
+{% block contenido %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Pedido #{{ pedido.pk }} · {{ pedido.cliente.nombre }}</h1>
+    <span class="badge text-bg-{{ pedido.color_estado }} fs-6">{{ pedido.get_estado_display }}</span>
+  </div>
+
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+      <p class="text-muted mb-1">Fecha: {{ pedido.fecha }}</p>
+      <p class="mb-0">{{ pedido.descripcion }}</p>
+    </div>
+  </div>
+
+  {% if faltantes and pedido.estado == "PRESUPUESTADO" %}
+    <div class="alert alert-warning">Hay materiales sin stock suficiente para este pedido.</div>
+  {% endif %}
+
+  <div class="card shadow-sm mb-3">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead class="table-dark">
+          <tr><th>Material</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th><th>Stock</th></tr>
+        </thead>
+        <tbody>
+          {% for d in detalles %}
+            <tr>
+              <td>{{ d.material.nombre }}</td><td>{{ d.cantidad }}</td>
+              <td>{{ d.precio_unitario }}</td><td>{{ d.subtotal }}</td>
+              <td>
+                {% if d.stock_suficiente %}<span class="badge text-bg-success">Hay</span>
+                {% else %}<span class="badge text-bg-danger">Falta</span>{% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3">Sin materiales.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if presupuesto %}
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="d-flex justify-content-between"><span>Materiales</span><span>{{ presupuesto.total_materiales }}</span></div>
+        <div class="d-flex justify-content-between"><span>Mano de obra</span><span>{{ presupuesto.mano_obra }}</span></div>
+        <hr>
+        <div class="d-flex justify-content-between fw-bold fs-5"><span>Total</span><span>{{ presupuesto.total }}</span></div>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="d-flex flex-wrap gap-2">
+    {% if pedido.estado == "PENDIENTE" or pedido.estado == "PRESUPUESTADO" %}
+      <a href="{% url 'pedido_editar' pedido.pk %}" class="btn btn-outline-primary">Editar pedido</a>
+      <a href="{% url 'presupuesto_form' pedido.pk %}" class="btn btn-info">Generar / editar presupuesto</a>
+    {% endif %}
+
+    {% if pedido.estado == "PRESUPUESTADO" %}
+      <form method="post" action="{% url 'pedido_aprobar' pedido.pk %}">
+        {% csrf_token %}<button class="btn btn-success">Aprobar y descontar stock</button>
+      </form>
+    {% endif %}
+
+    {% if pedido.estado == "PENDIENTE" or pedido.estado == "PRESUPUESTADO" or pedido.estado == "APROBADO" %}
+      <form method="post" action="{% url 'pedido_cancelar' pedido.pk %}">
+        {% csrf_token %}<button class="btn btn-warning">Cancelar pedido</button>
+      </form>
+    {% endif %}
+
+    {% if pedido.estado == "PENDIENTE" or pedido.estado == "PRESUPUESTADO" or pedido.estado == "CANCELADO" %}
+      <a href="{% url 'pedido_borrar' pedido.pk %}" class="btn btn-outline-danger">Eliminar pedido</a>
+    {% endif %}
+
+    <a href="{% url 'pedido_lista' %}" class="btn btn-outline-secondary ms-auto">Volver</a>
+  </div>
+{% endblock %}

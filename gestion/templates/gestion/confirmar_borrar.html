@@ -1,0 +1,18 @@
+{% extends "gestion/base.html" %}
+{% block contenido %}
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card border-danger shadow-sm">
+        <div class="card-body text-center">
+          <h1 class="h4 text-danger">¿Eliminar?</h1>
+          <p class="lead">{{ object }}</p>
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary">Cancelar</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

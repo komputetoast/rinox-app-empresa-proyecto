@@ -1,0 +1,37 @@
+{% extends "gestion/base.html" %}
+{% block contenido %}
+  <h1 class="h3 mb-4">Panel</h1>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm text-center">
+        <div class="card-body">
+          <div class="display-5">{{ total_clientes }}</div>
+          <div class="text-muted">Clientes</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm text-center">
+        <div class="card-body">
+          <div class="display-5">{{ pedidos_pendientes }}</div>
+          <div class="text-muted">Pedidos pendientes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-warning-subtle">Materiales con stock bajo</div>
+    <ul class="list-group list-group-flush">
+      {% for m in stock_bajo %}
+        <li class="list-group-item d-flex justify-content-between">
+          <span>{{ m.nombre }}</span>
+          <span class="text-danger">{{ m.stock_actual }} {{ m.unidad }} (mínimo {{ m.stock_minimo }})</span>
+        </li>
+      {% empty %}
+        <li class="list-group-item text-success">Todo en orden.</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

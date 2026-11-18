@@ -1,0 +1,24 @@
+{% extends "gestion/base.html" %}
+{% load crispy_forms_tags %}
+{% block contenido %}
+  <h1 class="h3 mb-3">Pedido</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">{{ form|crispy }}</div>
+    </div>
+
+    <h2 class="h5">Materiales</h2>
+    {{ formset.management_form }}
+    <div class="row g-3 mb-4">
+      {% for f in formset %}
+        <div class="col-md-6">
+          <div class="card shadow-sm"><div class="card-body">{{ f|crispy }}</div></div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="{% url 'pedido_lista' %}" class="btn btn-outline-secondary">Volver</a>
+  </form>
+{% endblock %}
